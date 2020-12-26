@@ -35,6 +35,7 @@ jobs:
   - get: git-src
     trigger: true
   - task: task-molecule
+    privileged: true
     config:
       platform: linux
       image_resource:
@@ -50,5 +51,11 @@ jobs:
         args:
         - -c
         - |
+          dockerd-entrypoint.sh &
+          while ! docker info > /dev/null 2>&1
+          do
+              echo "Waiting for Docker to initialize..."
+              sleep 2
+          done
           molecule test
 ```
